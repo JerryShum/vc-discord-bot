@@ -5,7 +5,6 @@ from gtts import gTTS
 from dotenv import load_dotenv
 import asyncio
 
-# Load environment variables from .env file
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 TEXT_CHANNEL_ID = int(os.getenv("TEXT_CHANNEL_ID"))
@@ -15,12 +14,10 @@ ADMIN_USER_ID = int(os.getenv("ADMIN_USER_ID"))
 OWNER_USER_ID = int(os.getenv("OWNER_USER_ID"))
 GENERAL_USER_ID = int(os.getenv("GENERAL_USER_ID"))
 
-# Set up the bot with necessary intents
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Variable to store the voice connection
 voice_connection = None
 
 async def connect_to_voice_channel():
@@ -32,20 +29,18 @@ async def connect_to_voice_channel():
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
-    await connect_to_voice_channel()  # Connect to voice channel on startup
+    await connect_to_voice_channel()
 
 @bot.event
 async def on_message(message):
     global voice_connection
     if message.author == bot.user:
-        return  # Ignore bot's own messages
+        return
 
-    # Check if the message is from the specified user in the specified text channel
-    if message.channel.id == TEXT_CHANNEL_ID and (message.author.id == VELARIE_USER_ID or message.author.id == ADMIN_USER_ID or message.author.id == OWNER_USER_ID or message.author.id == GENERAL_USER_ID) :
+    if message.channel.id == TEXT_CHANNEL_ID and (message.author.id == VELARIE_USER_ID or message.author.id == ADMIN_USER_ID or message.author.id == OWNER_USER_ID or message.author.id == GENERAL_USER_ID):
         if voice_connection is None:
-            await connect_to_voice_channel()  # Reconnect if disconnected
+            await connect_to_voice_channel()
         
-        # Convert message to speech and play it in the voice channel
         await play_tts(voice_connection, message.content)
 
 async def play_tts(vc, text):
@@ -56,7 +51,6 @@ async def play_tts(vc, text):
     while vc.is_playing():
         await asyncio.sleep(1)
     
-    os.remove("message.mp3")  # Clean up audio file after playing
+    os.remove("message.mp3")
 
-# Run the bot
 bot.run(TOKEN)
