@@ -1,0 +1,5 @@
+botelevenlabs.py
+_pycache_
+*.pyc
+*.pyo
+.env
